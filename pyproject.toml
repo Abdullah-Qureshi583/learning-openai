@@ -1,0 +1,12 @@
+[project]
+name = "learning-openai"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "google-generativeai>=0.8.5",
+    "litellm>=1.74.3",
+    "openai-agents>=0.1.0",
+]
