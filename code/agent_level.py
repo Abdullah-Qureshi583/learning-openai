@@ -43,7 +43,7 @@ def farewell(name: str) -> str:
 greeting_agent = Agent(
     name="Greeting Agent",
     instructions="You are a greeting agent. Your task is to greet the user in a friendly manner.",
-    # ⚠️ model=model, is commented out. This means the agent will use the default model if set somewhere else.
+    model=model,  # Use the Gemini model we configured
 )
 
 # ------------------ Run Agent ------------------
