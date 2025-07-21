@@ -823,6 +823,7 @@ dependencies = [
     { name = "google-generativeai" },
     { name = "litellm" },
     { name = "openai-agents" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -832,6 +833,7 @@ requires-dist = [
     { name = "google-generativeai", specifier = ">=0.8.5" },
     { name = "litellm", specifier = ">=1.74.3" },
     { name = "openai-agents", specifier = ">=0.1.0" },
+    { name = "python-dotenv", specifier = ">=1.1.1" },
 ]
 
 [[package]]
