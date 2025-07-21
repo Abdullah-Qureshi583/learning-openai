@@ -1,3 +1,5 @@
+# have docs
+# https://github.com/Abdullah-Qureshi583/learning-openai/blob/main/docs/chainlit_guide.md
 import chainlit as cl
 from openai.types.responses import ResponseTextDeltaEvent
 from agents import Agent, Runner, OpenAIChatCompletionsModel, set_tracing_disabled
