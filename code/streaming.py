@@ -28,12 +28,8 @@ async def main():
     user_input = str(input("How can i help you today? : "))
     result = Runner.run_streamed(agent,user_input)
     async for event in result.stream_events():
-        if event.type == "raw_response_event":
-            print(event.data )
-            print("-"*30)
-
-        # if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):            
-        #     print(event.data.delta, end="|", flush=True)
+        if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):            
+            print(event.data.delta, end="", flush=True)
     
 
 if __name__ == "__main__":
