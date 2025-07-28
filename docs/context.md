@@ -2,6 +2,10 @@
 
 This document covers all context‑related points in the given code.
 
+```md
+https://github.com/Abdullah-Qureshi583/learning-openai/blob/main/code/context.py
+```
+
 ---
 
 ## 1. `UserContext` dataclass
@@ -88,10 +92,10 @@ items = context.context.prev_item()
 
 ## 5. Quick Summary
 
-| Concept            | Purpose                                                   |
-|--------------------|-----------------------------------------------------------|
-| `@dataclass`       | Simplifies class definition, auto‑generates `__init__`    |
-| `UserContext`      | Stores user ID, pro status, methods like `prev_item()`    |
-| `Agent[UserContext]` | Binds agent to that context type                         |
-| `Runner.run(context=)` | Supplies the actual `UserContext` instance            |
-| `context.context`  | Unwraps framework wrapper to access your data             |
+| Concept                | Purpose                                                |
+| ---------------------- | ------------------------------------------------------ |
+| `@dataclass`           | Simplifies class definition, auto‑generates `__init__` |
+| `UserContext`          | Stores user ID, pro status, methods like `prev_item()` |
+| `Agent[UserContext]`   | Binds agent to that context type                       |
+| `Runner.run(context=)` | Supplies the actual `UserContext` instance             |
+| `context.context`      | Unwraps framework wrapper to access your data          |
