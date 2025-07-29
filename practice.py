@@ -1,4 +1,5 @@
 from agents import Agent, Runner, OpenAIChatCompletionsModel, function_tool
+import asyncio
 from dataclasses import dataclass
 from pydantic import BaseModel
 import os 
@@ -82,10 +83,10 @@ class UserContext:
         return f"Previous item for {self.uid} are apple and banana"
 
 
-def dynamic_instructions(context: UserContext) -> str:
-    print(f"Dynamic instructions called for user {context}")
+def dynamic_instructions(context: UserContext, agent) -> str:
+    print("Dynamic instructions called with context:", context)
+    print("Dynamic instructions called with agent:", agent)
     if context.context.is_pro_user:
-        print("the context is ",context.context.is_pro_user)
         return "You are helping a Pro user. Offer premium support and discounts."
     else:
         return "You are helping a Free user. Just offer standard support."
@@ -104,9 +105,11 @@ pro_user = UserContext(uid="abdullah001", is_pro_user=True)
 free_user = UserContext(uid="guest123", is_pro_user=False)
 
 
-response_pro = Runner.run_sync(agent, context=pro_user,run_config=config, input="am i a pro user? if yes, what are my previous items?")
+response_pro = Runner.run_sync(agent,context=pro_user, run_config=config, input="am i a pro user? if yes, what are my previous items?")
 print("🟢 Pro User Response:", response_pro)
 
 # # Run for Free User
 # response_free = Runner.run_sync(agent, context=free_user,run_config=config, input="I need help")
 # print("🔵 Free User Response:", response_free)
+
+
