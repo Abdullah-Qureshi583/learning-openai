@@ -1,7 +1,7 @@
 #  https://github.com/Abdullah-Qureshi583/learning-openai/blob/main/docs/context.md 
-from agents import Agent, Runner, OpenAIChatCompletionsModel, function_tool
+from pydantic import BaseModel
+from agents import Agent, Runner, OpenAIChatCompletionsModel, function_tool,RunContextWrapper
 import asyncio
-from dataclasses import dataclass
 import os 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
@@ -27,44 +27,50 @@ config = RunConfig(
     model_provider=client,
     tracing_disabled=True
 )
+
 async def main():
-        
-    @dataclass
-    class UserContext:
+    # By the use of BaseModel,we do not have to define the __init__ method
+    # and we can use the attributes directly.
+    # create the UserInfo class to represent user information structured
+    class UserInfo(BaseModel):
+        name: str
         uid: str
-        is_pro_user: bool
-        def prev_item(self):
-            # for now just place the static response
-            if self.is_pro_user:
-                return f"Previous item for {self.uid} are laptop and headphones"
-            else:
-                return f"Previous item for {self.uid} are coffee and croissant"
+        password: str
 
+    # if set the is_enabled to True, so that it will not passed to the LLM.
+    # @function_tool(is_enabled=True) 
+    
+    # Define a function to fetch user age and mark it as a tool
+    @function_tool()
+    # this wrapper is just working normally as the parameter 
+    # and by using this " RunContextWrapper[UserInfo] " we have just define the type, Nothing else.
+    async def fetch_user_age(wrapper: RunContextWrapper[UserInfo]) -> str:  
+        """Fetch the age of the user. Call this function to get user's age information."""
+        # the return value will be passed to the LLM
+        # and the LLM will use this value to generate the response.
+        return f"The user {wrapper.context.name} is 47 years old"
 
-    def dynamic_instructions(context: UserContext, agent) -> str:
-        is_pro_user = context.context.is_pro_user
-        prev_items = context.context.prev_item()
-        if is_pro_user:
-            return f"You are helping a Pro user. Offer premium support and discounts. User previous items are: {prev_items} tell the user about their previous items and list previous items and discounts 50% for the next purchase. Stay professional and helpful."
-        else:
-            return f"You are helping a Free user. Just offer standard support. User previous items are: {prev_items} tell the user about their previous items and list previous items and discounts 20% fro the next purchase. Stay professional and helpful."
-
-    agent = Agent[UserContext](
+    # Create the agent
+    # and this part "[UserInfo]" is just to define the type of the context.
+    agent = Agent[UserInfo](
         name="SupportAgent",
-        instructions=dynamic_instructions,  # 👈 we pass the function, not static text
+        # intructions are not necessary, but you can provide them if you want.
+        instructions="You are helping a user. Fetch their age and provide personalized support.",
+        tools=[fetch_user_age],
     )
-
-    pro_user = UserContext(uid="abdullah001", is_pro_user=True)
-    free_user = UserContext(uid="guest123", is_pro_user=False)
-
-    response_pro = await Runner.run(agent,context=pro_user, run_config=config, input="Hello")
-    response_free = await Runner.run(agent,context=free_user, run_config=config, input="Hello")
     
+    # Create a user context
+    # and this context will be passed to the agent.
+    user = UserInfo(uid="abdullah001", name="Abdullah Qureshi", password="securepassword123")
     
-    print("🟢 Pro User Response:", response_pro)
-    print("⭕ User Response:", response_free)
-
-
+    # Run the agent with the user context
+    # All the main works in the Runner when passing the context here 
+    # Even we don't do any thing else so still the LLM will not able to access the context directly
+    user_response = await Runner.run(agent,context=user, run_config=config, input="Hello what is my age?")
+    print("⭕ User Response:", user_response)
 
 if __name__ == "__main__":
+    
     asyncio.run(main())
+
+
