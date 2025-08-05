@@ -2,6 +2,7 @@
 # https://github.com/Abdullah-Qureshi583/learning-openai/blob/main/docs/streaming_guide.md
 from openai import AsyncOpenAI
 import asyncio
+from agents.run import RunConfig
 from openai.types.responses import ResponseTextDeltaEvent
 from agents import Agent, Runner, OpenAIChatCompletionsModel,ItemHelpers, function_tool
 from dotenv import load_dotenv
@@ -23,6 +24,11 @@ model = OpenAIChatCompletionsModel(
     openai_client=client   
 )
 
+config = RunConfig(
+    model=model,
+    model_provider=client,
+    tracing_disabled=True
+)
 
 @function_tool
 def how_many_jokes() -> int:
@@ -41,15 +47,20 @@ async def main():
     
     
     # All other response
-    agent = Agent(
+    joker_agent = Agent(
         name="Joker",
         instructions="First call the `how_many_jokes` tool, then tell that many jokes.",
         tools=[how_many_jokes],
-        model=model
+    )
+    
+    triage_agent = Agent(
+        name="Triage Agent",
+        instructions="you are a triage agent if the user ask about the joke so handoff to the \"joker_agent\".",
+        handoffs=[joker_agent]
     )
 
-    # user_input = str(input("How can I help you? "))
-    result = Runner.run_streamed(agent,  input="Hello")
+    user_input = str(input("How can I help you? "))
+    result = Runner.run_streamed(triage_agent,  input=user_input,run_config=config)
     print("=== Run starting ===")
 
     async for event in result.stream_events():
