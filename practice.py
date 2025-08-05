@@ -22,22 +22,15 @@ model = OpenAIChatCompletionsModel(
     openai_client=client
 )
 
-config = RunConfig(
-    model=model,
-    model_provider=client,
-    tracing_disabled=True
-)
-
 async def main():
     agent = Agent(
         name="Helpful Assistant",
         instructions="You are a helpful assistant.",
-        
-        
+        model=model   
     )
 
     user_input = str(input("How can I help you? "))
-    result = Runner.run_streamed(agent,  input=user_input, run_config=config)
+    result = Runner.run_streamed(agent,  input=user_input)
     async for event in result.stream_events():
         if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
             print(event.data.delta, end="", flush=True)
