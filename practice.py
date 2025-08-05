@@ -1,4 +1,5 @@
-from agents import Agent, Runner, OpenAIChatCompletionsModel
+from agents import Agent, Runner, OpenAIChatCompletionsModel,ItemHelpers, function_tool
+import random
 from openai.types.responses import ResponseTextDeltaEvent
 
 from openai import AsyncOpenAI
@@ -28,15 +29,42 @@ config = RunConfig(
     tracing_disabled=True
 )
 
+@function_tool
+def how_many_jokes() -> int:
+    return random.randint(1, 10)
+
+
 async def main():
     agent = Agent(
-        name="Helpful Assistant",
-        instructions="You are a helpful assistant.",
+        name="Joker",
+        instructions="First call the `how_many_jokes` tool, then tell that many jokes.",
+        tools=[how_many_jokes],
     )
 
-    user_input = str(input("How can I help you? "))
-    result = await Runner.run(agent,  input=user_input, run_config=config)
-    print("The responce from the agent is : ", result.final_output)
+    # user_input = str(input("How can I help you? "))
+    result = Runner.run_streamed(agent,  input="Hello", run_config=config)
+    print("=== Run starting ===")
+
+    async for event in result.stream_events():
+        # We'll ignore the raw responses event deltas
+        if event.type == "raw_response_event":
+            continue
+        # When the agent updates, print that
+        elif event.type == "agent_updated_stream_event":
+            print(f"Agent updated: {event.new_agent.name}")
+            continue
+        # When items are generated, print them
+        elif event.type == "run_item_stream_event":
+            if event.item.type == "tool_call_item":
+                print("-- Tool was called")
+            elif event.item.type == "tool_call_output_item":
+                print(f"-- Tool output: {event.item.output}")
+            elif event.item.type == "message_output_item":
+                print(f"-- Message output:\n {ItemHelpers.text_message_output(event.item)}")
+            else:
+                pass  # Ignore other event types
+
+    print("=== Run complete ===")
     
 
 if __name__ == "__main__":
