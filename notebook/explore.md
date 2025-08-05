@@ -1,6 +1,13 @@
 # OpenAI Learning Exploration Notes
 
 ## Key Concepts to Explore
+. run_config -> model setting and more 
+
+. handoff
+
+. i/o guardrails
+
+. how to manage session
 
 ### 1. Handoffs
 - Agent handoff mechanisms

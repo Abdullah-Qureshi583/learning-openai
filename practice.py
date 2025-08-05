@@ -35,14 +35,24 @@ def how_many_jokes() -> int:
 
 
 async def main():
-    agent = Agent(
+    joker_agent = Agent(
         name="Joker",
         instructions="First call the `how_many_jokes` tool, then tell that many jokes.",
         tools=[how_many_jokes],
     )
+    
+    triage_agent = Agent(
+        name="Triage Agent",
+        instructions="you are a triage agent if the user ask about the joke so handoff to the \"joker_agent\" otherwise answer the user query.",
+        handoffs=[joker_agent]
+    )
+    
+    
+    
+    
 
-    # user_input = str(input("How can I help you? "))
-    result = Runner.run_streamed(agent,  input="Hello", run_config=config)
+    user_input = str(input("How can I help you? "))
+    result = Runner.run_streamed(triage_agent,  input=user_input, run_config=config)
     print("=== Run starting ===")
 
     async for event in result.stream_events():
