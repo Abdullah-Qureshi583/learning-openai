@@ -145,18 +145,18 @@ config = RunConfig(
     tracing_disabled=True
 )
 
-async def main():
-    agent = Agent(
-        name="Helpful Assistant",
-        instructions="You are a helpful assistant.",
-        
-        
-    )
 
-    user_input = str(input("How can I help you? "))
-    result =  await Runner.run(agent, input=user_input, run_config=config)
+agent = Agent(
+    name="Helpful Assistant",
+    instructions="You are a helpful assistant.",
+    
+    
+)
 
-    print("🟢Response:", result.final_output)
+user_input = str(input("How can I help you? "))
+result = Runner.run_sync(agent, input=user_input, run_config=config)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+print("🟢Response:", result.final_output)
+
+# if __name__ == "__main__":
+#     asyncio.run(main())
