@@ -1,10 +1,4 @@
-from agents import Agent, Runner, OpenAIChatCompletionsModel,SQLiteSession
-# here, i was getting the error as module not found when using SQLiteSession so i update the version of openai 
-# from openai.memory import SQLiteSession
-
-# from agents.momory import SQLiteSession
-# from agents.memory import SQLiteSession
-
+from agents import Agent, Runner, OpenAIChatCompletionsModel,SQLiteSession, trace
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 import asyncio
@@ -38,32 +32,53 @@ async def main():
         instructions="Reply very concisely.",
     )
     
-    # session = "conversation_123"
-    session = SQLiteSession("conversation_123")
+    # session = SQLiteSession("conversation_123")
 
-    user_input = str(input("How can I help you? "))
-    result = await Runner.run(
-        starting_agent=agent, 
-        # input="What city is the Golden Gate Bridge in?",
-        input=user_input, 
-        run_config=config, 
-        session=session
-    )
-
-    print("🟢 First result:", result.final_output)
     
-    user_input2 = str(input("what do you adsk about? :"))
-    result = await Runner.run(
-        agent,
-        # "What state is it in?",
-        input=user_input2,
-        run_config=config, 
+    
+    # while True:
+    #     user_input = str(input("How can I help you? "))
+    #     if user_input != "exit":
+    #         result = await Runner.run(
+    #             starting_agent=agent, 
+    #             input=user_input, 
+    #             run_config=config, 
+    #             session=session
+    #         )
+    #     else:
+    #         exit()
+
+    #     print("🟢 First result:", result.final_output)
         
-        session=session
-    )
-    print("Second Result : " ,result.final_output) 
+        
+        
+    
+    # user_input2 = str(input("what do you ask about? :"))
+    # result = await Runner.run(
+    #     agent,
+    #     input=user_input2,
+    #     run_config=config, 
+    #     session=session
+    # )
+    # print("Second Result : " ,result.final_output) 
+
+
+
+
+    thread_id = "thread_123"  # Example thread ID
+    with trace(workflow_name="Conversation", group_id=thread_id):
+        # First turn
+        result = await Runner.run(agent, "What city is the Golden Gate Bridge in?", run_config=config)
+        print(result.final_output)
+        # San Francisco
+
+        # Second turn
+        new_input = result.to_input_list() + [{"role": "user", "content": "What state is it in?"}]
+        result = await Runner.run(agent, new_input, run_config=config)
+        print(result.final_output)
 
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+    
