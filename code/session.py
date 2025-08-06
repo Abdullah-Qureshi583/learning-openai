@@ -32,10 +32,12 @@ async def main():
         instructions="Reply very concisely.",
     )
     
-    # session = SQLiteSession("conversation_123")
+    session = SQLiteSession("conversation_123")
+    
 
     
-    
+    # ===================================================
+    # ask with session history until exit
     # while True:
     #     user_input = str(input("How can I help you? "))
     #     if user_input != "exit":
@@ -51,32 +53,42 @@ async def main():
     #     print("🟢 First result:", result.final_output)
         
         
-        
+    # =====================================================================
+    # done the history manage by manually doing using to_input_list() manually
     
-    # user_input2 = str(input("what do you ask about? :"))
-    # result = await Runner.run(
-    #     agent,
-    #     input=user_input2,
-    #     run_config=config, 
-    #     session=session
-    # )
-    # print("Second Result : " ,result.final_output) 
+    # thread_id = "thread_123"  # Example thread ID
+    # with trace(workflow_name="Conversation", group_id=thread_id):
+    #     # First turn
+    #     user_input = str(input("Enter your query here?"))
+    #     result = await Runner.run(agent, user_input, run_config=config)
+    #     print(result.final_output)
+    #     # San Francisco
+
+    #     # Second turn
+    #     user_input2 = str(input("What do you want to ask about this?"))
+    #     new_input = result.to_input_list() + [{"role": "user", "content": user_input2}]
+    #     result = await Runner.run(agent, new_input, run_config=config)
+    #     print(result.final_output)
 
 
-
-
-    thread_id = "thread_123"  # Example thread ID
-    with trace(workflow_name="Conversation", group_id=thread_id):
-        # First turn
-        result = await Runner.run(agent, "What city is the Golden Gate Bridge in?", run_config=config)
-        print(result.final_output)
-        # San Francisco
-
-        # Second turn
-        new_input = result.to_input_list() + [{"role": "user", "content": "What state is it in?"}]
-        result = await Runner.run(agent, new_input, run_config=config)
-        print(result.final_output)
-
+    
+    new_items = [
+        {"role": "user", "content": "My name is Abdullh Qureshi"},    
+        {"role": "assistant", "content": "Hi there!"}
+    ]
+    await session.add_items(new_items)
+    items= await session.get_items()
+    print("All items are : ",items)
+    
+    # last_item = await session.pop_item() #delete from the original array
+    # print("last item is : ",last_item)  
+    
+    # items= await session.get_items()
+    # print("All items are : ",items)
+    
+    user_input = str(input("Enter your Query here : "))
+    result = await Runner.run(agent, user_input, run_config=config, session=session)
+    print(result.final_output)
 
 
 if __name__ == "__main__":
