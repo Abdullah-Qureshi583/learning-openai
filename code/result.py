@@ -1,4 +1,5 @@
-from agents import Agent, Runner, OpenAIChatCompletionsModel
+from agents import Agent, Runner, OpenAIChatCompletionsModel, enable_verbose_stdout_logging
+from agents.memory import SQLiteSession
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 import asyncio
@@ -6,6 +7,7 @@ import os
 from agents.run import RunConfig
 
 load_dotenv()
+enable_verbose_stdout_logging()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL = "gemini-2.0-flash"
@@ -26,16 +28,48 @@ config = RunConfig(
     tracing_disabled=True
 )
 
+
 async def main():
-    agent = Agent(
-        name="Helpful Assistant",
-        instructions="You are a helpful assistant."
+    session = SQLiteSession("result_conversation")
+    
+    python_agent = Agent(
+        name="Python Assistant",
+        instructions="You are a python assistant, that tells just about the python queries ask by the user. give the short answer."
+    )
+    
+    historical_agent = Agent(
+        name="Historical Assistant",
+        instructions="You are a Historical assistant, that tell about the historical places and talks about the history ask by the user. give the short answer.",
+        handoff_description="This agent tells about the history whether that is related to the places and even for everything related to history"
+        
+        
+    )
+    
+    triage_agent = Agent(
+        name="Triage Agent",
+        instructions="You are a triage agent, your task is to handoff the task to the relevant agent.",
+        handoffs=[ historical_agent,python_agent]
+        
     )
 
-    user_input = str(input("How can I help you? "))
-    result = await Runner.run(agent, input=user_input, run_config=config)
-
-    print("🟢Response:", result.final_output)
+    
+    
+        
+    
+    # result = await Runner.run(triage_agent, input=user_input, run_config=config )
+    # print("🟢Response:", result)
+    
+    while True:
+        user_input = str(input("How can I help you? "))
+        if user_input == "exit":
+            exit()
+        
+        result = await Runner.run(triage_agent, input=user_input, run_config=config, session=session)
+        print("🟢Response:", result.final_output)
 
 if __name__ == "__main__":
     asyncio.run(main())
+    
+    # handoffs description 
+    # handoff
+    
