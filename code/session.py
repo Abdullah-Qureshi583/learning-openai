@@ -33,24 +33,25 @@ async def main():
     )
     
     session = SQLiteSession("conversation_123")
+    # session = SQLiteSession("conversation_123","./conversation_history.txt")
     
 
     
     # ===================================================
     # ask with session history until exit
-    # while True:
-    #     user_input = str(input("How can I help you? "))
-    #     if user_input != "exit":
-    #         result = await Runner.run(
-    #             starting_agent=agent, 
-    #             input=user_input, 
-    #             run_config=config, 
-    #             session=session
-    #         )
-    #     else:
-    #         exit()
+    while True:
+        user_input = str(input("How can I help you? "))
+        if user_input != "exit":
+            result = await Runner.run(
+                starting_agent=agent, 
+                input=user_input, 
+                run_config=config, 
+                session=session
+            )
+        else:
+            exit()
 
-    #     print("🟢 First result:", result.final_output)
+        print("🟢 First result:", result.final_output)
         
         
     # =====================================================================
@@ -72,23 +73,23 @@ async def main():
 
 
     
-    new_items = [
-        {"role": "user", "content": "My name is Abdullh Qureshi"},    
-        {"role": "assistant", "content": "Hi there!"}
-    ]
-    await session.add_items(new_items)
-    items= await session.get_items()
-    print("All items are : ",items)
-    
-    # last_item = await session.pop_item() #delete from the original array
-    # print("last item is : ",last_item)  
-    
+    # new_items = [
+    #     {"role": "user", "content": "My name is Abdullh Qureshi"},    
+    #     {"role": "assistant", "content": "Hi there!"}
+    # ]
+    # await session.add_items(new_items)
     # items= await session.get_items()
     # print("All items are : ",items)
     
-    user_input = str(input("Enter your Query here : "))
-    result = await Runner.run(agent, user_input, run_config=config, session=session)
-    print(result.final_output)
+    # # last_item = await session.pop_item() #delete from the original array
+    # # print("last item is : ",last_item)  
+    
+    # # items= await session.get_items()
+    # # print("All items are : ",items)
+    
+    # user_input = str(input("Enter your Query here : "))
+    # result = await Runner.run(agent, user_input, run_config=config, session=session)
+    # print(result.final_output)
 
 
 if __name__ == "__main__":
