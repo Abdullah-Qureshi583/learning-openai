@@ -12,5 +12,6 @@ dependencies = [
     "litellm>=1.74.3",
     "openai-agents>=0.1.0",
     "phonenumbers>=9.0.10",
+    "pypdf2>=3.0.1",
     "python-dotenv>=1.1.1",
 ]
