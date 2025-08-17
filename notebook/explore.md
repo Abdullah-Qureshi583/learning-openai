@@ -21,10 +21,6 @@
 - Safety and control mechanisms
 - Content filtering and validation
 
-### 4. Verbose Mode
-- Enable traces for debugging
-- Detailed logging and monitoring
-
 ## Learning Resources
 
 ### Effective Prompt Writing
