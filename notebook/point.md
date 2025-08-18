@@ -21,5 +21,17 @@
 
 11. If the name is changes using handoff withour "s" so the llm will see the new name even use the agent with that name even the detailis not related
 
+# agent as a tool
+12. If usign agent as a tool and also set the configuration at run level so triage agent will not pass the configuration to the agents that are as tool. we need to configure and set the model at agent level or global level
+
+13. But when usign agent as a handoff and also set the configuration at run level so triage agent will use the configuration set at run level and pass to the handoff agent when deligating
+
+# free limit
+14. gemini-2.0-flash has a limited free tier and gemini-2.5-is free (not confirmed as still not use a lot)
+
+
+
+
+
 
 ```
